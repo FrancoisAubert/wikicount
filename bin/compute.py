@@ -11,9 +11,9 @@ DEFAULT_CONFIG_DIRECTORY = join(dirname(__file__), "../conf")
 DEFAULT_CONFIG_FILE = join(DEFAULT_CONFIG_DIRECTORY, "config.json")
 
 
-def compute(args, config=DEFAULT_CONFIG_FILE):
+def compute(*args):
     print "Loading config file..."
-    config = json.load(open(config))
+    config = json.load(open(DEFAULT_CONFIG_FILE))
     source = Source(*args, **config)
     processor = Processor(source)
     results = processor.process()
