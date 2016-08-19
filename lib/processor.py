@@ -57,6 +57,10 @@ class Processor(object):
         results_file = join(RESULTS_PATH, str(start_datetime) + "-" + str(end_datetime))
         with open(results_file, 'w+') as infile:
             for result in results:
-                infile.write("domain : {}, page : {}, pagecount : {} \n".format(result[0][0],
-                                                                                result[0][1],
-                                                                                result[1]))
+                try:
+                    infile.write("domain : {}, page : {}, pagecount : {} \n".format(
+                    str(result[0][0]).encode('utf-8'),
+                    str(result[0][1]).encode('utf-8'),
+                    str(result[1]).encode('utf-8')))
+                except UnicodeEncodeError:
+                    continue
