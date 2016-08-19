@@ -20,7 +20,7 @@ class Processor(object):
         blacklist_rdd = self._preprocess_blacklist(self._get_blacklist_rdd())
         rdd = self._filter_black_listed_items(data_rdd, blacklist_rdd)
         clean_rdd = rdd.reduceByKey(lambda x, y: x + y).map(lambda x: (x[0][0], x))
-        return clean_rdd.takeOrderedByKey(25,  sortValue=lambda x: x[1][1], reverse=True).collect()
+        return clean_rdd.takeOrderedByKey(25,  sortValue=lambda x: x[1], reverse=True).flatMap(lambda x: x[1]).collect()
 
     def _get_data_rdd(self):
         files = self.source.fetch_source()
@@ -57,6 +57,6 @@ class Processor(object):
         results_file = join(RESULTS_PATH, str(start_datetime) + "-" + str(end_datetime))
         with open(results_file, 'w+') as infile:
             for result in results:
-                infile.write("domain : {}, page : {}, pagecount : {} \n".format(result[1][0][0],
-                                                                                result[1][0][1],
-                                                                                result[1][1]))
+                infile.write("domain : {}, page : {}, pagecount : {} \n".format(result[0][0],
+                                                                                result[0][1],
+                                                                                result[1]))

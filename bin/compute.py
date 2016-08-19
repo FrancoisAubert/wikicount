@@ -18,12 +18,13 @@ def compute(args, config=DEFAULT_CONFIG_FILE):
     processor = Processor(source)
     results = processor.process()
     print "Sending results..."
+    print results
     processor.send_results(results, source.start_datetime, source.end_datetime)
 
 if __name__ == '__main__':
     args = sys.argv
     if len(args) == 3:
-        real_args = [datetime.strptime(args[i], "%d/%m/%y %H") for i in range(1,3)]
+        real_args = [datetime.strptime(args[i], "%d/%m/%y %H") for i in range(1, 3)]
         compute(*real_args)
     elif len(args) == 2:
         arg = [datetime.strptime(args[1], "%d/%m/%y %H") for _ in range(2)]
