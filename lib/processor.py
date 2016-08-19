@@ -1,8 +1,13 @@
-from os.path import join
+from os.path import join, dirname
 from pyspark import SparkContext
+from pyspark.rdd import RDD
+
+from wikicount.lib.utils import takeOrderedByKey
 
 
 class Processor(object):
+
+    RDD.takeOrderedByKey = takeOrderedByKey
 
     def __init__(self, source, destination=None):
         self.source = source
@@ -14,11 +19,12 @@ class Processor(object):
         data_rdd = self._preprocess_data(self._get_data_rdd())
         blacklist_rdd = self._preprocess_blacklist(self._get_blacklist_rdd())
         rdd = self._filter_black_listed_items(data_rdd, blacklist_rdd)
-        return rdd.reduceByKey(lambda x, y: x + y).takeOrdered(25, key=lambda x: -x[1])
+        clean_rdd = rdd.reduceByKey(lambda x, y: x + y).map(lambda x: (x[0][0], x))
+        return clean_rdd.takeOrderedByKey(25,  sortValue=lambda x: x[1][1], reverse=True).collect()
 
     def _get_data_rdd(self):
         files = self.source.fetch_source()
-        return self.sc.union([self.sc.textFile(f) for f in files]).repartition(self.sc.defaultParallelism * 3)
+        return self.sc.union([self.sc.textFile(f) for f in files]).repartition(self.sc.defaultParallelism * 2)
 
     def _get_blacklist_rdd(self):
         return self.sc.textFile(self.source.fetch_blacklist())
@@ -46,11 +52,11 @@ class Processor(object):
         return ((splited_line[0], splited_line[1]), 0)
 
     @staticmethod
-    def send_results(self, results, start_datetime, end_datetime):
+    def send_results(results, start_datetime, end_datetime):
         RESULTS_PATH = join(dirname(__file__), "../files")
         results_file = join(RESULTS_PATH, str(start_datetime) + "-" + str(end_datetime))
-        with open(results_file, 'r') as infile:
+        with open(results_file, 'w+') as infile:
             for result in results:
-                infile.write("domain : {}, page : {}, pagecount : {} \n".format(results[0][0],
-                                                                                results[0][1],
-                                                                                results[1]))
+                infile.write("domain : {}, page : {}, pagecount : {} \n".format(result[1][0][0],
+                                                                                result[1][0][1],
+                                                                                result[1][1]))

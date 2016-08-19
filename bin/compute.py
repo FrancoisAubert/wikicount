@@ -21,13 +21,13 @@ def compute(args, config=DEFAULT_CONFIG_FILE):
     processor.send_results(results, source.start_datetime, source.end_datetime)
 
 if __name__ == '__main__':
-    args = sys.argv.pop(0)
-    if len(args) == 2:
-        args = args.map(lambda arg: datetime.strptime(arg, "%d/%m/%y %H"))
-        compute(*args)
-    elif len(args) == 1:
-        args = args.map(lambda arg: datetime.strptime(arg, "%d/%m/%y %H"))
-        compute([args[0] for _ in range(2)])
+    args = sys.argv
+    if len(args) == 3:
+        real_args = [datetime.strptime(args[i], "%d/%m/%y %H") for i in range(1,3)]
+        compute(*real_args)
+    elif len(args) == 2:
+        arg = [datetime.strptime(args[1], "%d/%m/%y %H") for _ in range(2)]
+        compute(arg)
     else:
         now = datetime.now()
         other = now.replace(month=now.month - 1)
