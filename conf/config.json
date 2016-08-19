@@ -1,0 +1,5 @@
+{
+ "base_source_path":"https://dumps.wikimedia.org/other/pagecounts-all-sites",
+ "local_base_directory":"/tmp/wikicount",
+ "blacklist_url":"https://s3.amazonaws.com/dd-interview-data/data_engineer/wikipedia/blacklist_domains_and_pages"
+}
