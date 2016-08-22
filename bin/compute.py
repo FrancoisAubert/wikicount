@@ -28,8 +28,9 @@ if __name__ == '__main__':
         compute(*real_args)
     elif len(args) == 2:
         arg = [datetime.strptime(args[1], "%d/%m/%y %H") for _ in range(2)]
-        compute(arg)
+        print arg
+        compute(*arg)
     else:
         now = datetime.now()
         other = now.replace(month=now.month - 1)
-        compute([other for _ in range(2)])
+        compute(*[other for _ in range(2)])
